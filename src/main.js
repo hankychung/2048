@@ -1,52 +1,65 @@
 import './style/index.styl'
 
 const POP_NUM = 2
+
+// 获取所有单元格
 const cellArr = document.querySelectorAll('.cell')
-let idArr = []
-for (let i = 0; i < cellArr.length; i++) {
-  idArr.push(cellArr[i].id)
-}
-
-start()
-
-document.getElementById('down').addEventListener('click', moveDown)
-
-// 初始化
-function start() {
-  let startCells = randomSelect(idArr, 2)
-  startCells.forEach(item => {
-    document.getElementById(item).innerHTML = POP_NUM
-  })
-}
-
-// 清空
-function clear() {
-  for (let i = 0; i < cellArr.length; i++) {
-    cellArr[i].innerHTML = ''
-  }
-}
-
-// 向下
-function moveDown() {
-
-  // 每一列的数组初始化
-  let cols = {
+// 定义列对象用以存储在列上面的单元格数据
+let cols = {}
+// 初始化列数据
+function initCols() {  
+  cols = {
     0: [],
     1: [],
     2: [],
     3: []
   }
-
-  // 将有数据的格子归类到相对应的列中(以元素id的方式)
+}
+// 获取有数据的格子id，并且push到所属的列中
+function getDataCells() {
+  initCols()
   for (let i = 0; i < cellArr.length; i++) {
     if (cellArr[i].innerHTML) {
       let idx = cellArr[i].id.charAt(1)
       cols[idx].push(cellArr[i].id)      
     }
   }
-  console.log(cols)
+}
 
-  // 暂存计算后的新数据
+
+
+
+
+
+
+start()
+
+getDom('down').addEventListener('click', moveDown)
+
+// 开始初始化
+function start() {
+  clear()
+  // 获取单元格的id数组
+  let idArr = []
+  for (let i = 0; i < cellArr.length; i++) {
+    idArr.push(cellArr[i].id)
+  }
+  // 从id数组中随机选取两个id，赋值
+  let startCells = randomSelect(idArr, 2)
+  startCells.forEach(item => {
+    getDom(item).innerHTML = POP_NUM
+  })
+}
+
+
+
+// 向下
+function moveDown() { 
+  // 将有数据的格子归类到相对应的列中(存储的是dom的id) 
+  getDataCells()
+  let ogData = cols
+
+  // 暂存计算后的新数据(存储的是计算后的数值)
   let temp = {
     0: [],
     1: [],
@@ -58,18 +71,28 @@ function moveDown() {
     let len = col.length    
     if (len > 1) {      
       for (let i=0; i < len; i++) {  
-        if (document.getElementById(col[i]).innerHTML == document.getElementById(col[i+1]).innerHTML) {
-          temp[key].push(parseInt(document.getElementById(col[i]).innerHTML)*2)
+        if (getDom(col[i]).innerHTML == getDom(col[i+1]).innerHTML) {
+          temp[key].push(parseInt(getDom(col[i]).innerHTML)*2)
           i++
+          // 如果当前数据是倒数第二个数，则直接push最后一个数值，并返回
+          if (i == len-2) {
+            temp[key].push(parseInt(getDom(col[i+1]).innerHTML))
+            return
+          }
         } else {
-          temp[key].push(parseInt(document.getElementById(col[i]).innerHTML))
+          temp[key].push(parseInt(getDom(col[i]).innerHTML))
+          // 如果当前数据是倒数第二个数，则直接push最后一个数值，并返回
+          if (i == len-2) {
+            temp[key].push(parseInt(getDom(col[i+1]).innerHTML))
+            return
+          }
         }
       }
     } else if (len > 0) {
-      temp[key].push(parseInt(document.getElementById(col[0]).innerHTML))
+      temp[key].push(parseInt(getDom(col[0]).innerHTML))
     }       
   }
-  console.log(temp)  
+  console.log(temp) 
 
   // 清除原数据
   clear()
@@ -81,10 +104,21 @@ function moveDown() {
       for (let i=0, idx=3; i<arr.length; i++) {
         let id = idx.toString() + key.toString()
         idx--
-        document.getElementById(id).innerHTML = arr[i]
+        getDom(id).innerHTML = arr[i]
       }
     }
   }
+
+  getDataCells()
+  let newData = cols
+
+  // 无变化则不做任何操作
+  if (ogData === newData) {
+    return
+  }
+
+  
+  
 }
 
 // 从数组中随机抽取互不相同的几个元素(*性能最佳的方法*)
@@ -97,6 +131,18 @@ function randomSelect(arr, num) {
   }
   return result
 }
+
+// 清空单元格数据
+function clear() {
+  for (let i = 0; i < cellArr.length; i++) {
+    cellArr[i].innerHTML = ''
+  }
+}
+
+function getDom(id) {
+  return document.getElementById(id)
+}
+
 
 
 
