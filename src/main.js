@@ -40,14 +40,17 @@ function start() {
 
 // 向下
 function moveDown() { 
-  // 将有数据的格子归类到相对应的列中(存储的是dom的id)   
+
+  // 将有数据的格子归类到相对应的列中(存储的是dom的id)(保存旧数据的位置)   
   getDataCells()  
   let ogData = cols 
+
   // 暂存计算后的新数据(存储的是计算后的数值)
   let temp = calData(cols)  
-  console.log(temp) 
+  
   // 清除原数据
   clear()
+
   // 渲染新数据
   for (let key in temp) {
     if (temp[key].length) {
@@ -59,14 +62,18 @@ function moveDown() {
       }
     }
   }
+
+  // 将有数据的格子归类到相对应的列中(存储的是dom的id)(保存新数据的位置)  
   getDataCells()
   let newData = cols
+  
   // 无变化则不做任何操作
-  if (ogData === newData) {
-    console.log('no move')
+  if (noChange(newData, ogData) != false) {
+    alert('you have no path on this direction')
     return
-  }
+  } 
 
+  // 清除动画
   for (let i = 0; i < cellArr.length; i++) {
     if (cellArr[i].classList.contains('pop')) {
       cellArr[i].classList.remove('pop')
@@ -149,6 +156,21 @@ function calData(cols) {
     }       
   }
   return temp
+}
+
+// 检测新旧对象是否内容一致
+function noChange(newData, ogData) {
+  for(let key in newData) {
+    if (newData[key].length) {
+      let newSingleArr = newData[key]
+      let oldSingerArr = ogData[key]
+      for (let i=0; i<newSingleArr.length; i++) {
+        if (newSingleArr[i] != oldSingerArr[i]) {
+          return false
+        }        
+      }
+    }   
+  }
 }
 
 // 简化
