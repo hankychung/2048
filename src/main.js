@@ -1,4 +1,5 @@
 import './style/index.styl'
+import './style/animation.styl'
 
 const POP_NUM = 2
 
@@ -25,11 +26,6 @@ function getDataCells() {
     }
   }
 }
-
-
-
-
-
 
 // 执行函数
 start()
@@ -70,8 +66,15 @@ function moveDown() {
     console.log('no move')
     return
   }
+
+  for (let i = 0; i < cellArr.length; i++) {
+    if (cellArr[i].classList.contains('pop')) {
+      cellArr[i].classList.remove('pop')
+    }    
+  }
+
   // 在空位生成两个新元素
-  setTimeout(popNum(2), 20)   
+  popNum(2)
 }
 
 // 从数组中随机抽取互不相同的几个元素(*性能最佳的方法*)
@@ -104,7 +107,10 @@ function popNum(num) {
   // 从id数组中随机选取n个id，赋值
   let popCells = randomSelect(idArr, num)  
   popCells.forEach(item => {
-    getDom(item).innerHTML = POP_NUM
+    setTimeout(function() {
+      getDom(item).innerHTML = POP_NUM 
+      getDom(item).classList.add('pop')
+    }, 10)  
   })
 }
 
@@ -149,6 +155,11 @@ function calData(cols) {
 function getDom(id) {
   return document.getElementById(id)
 }
+
+
+
+
+
 
 
 
