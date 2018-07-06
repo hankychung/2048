@@ -2,6 +2,7 @@ import './style/index.styl'
 import './style/animation.styl'
 
 const POP_NUM = 2
+const MAX_IDX = 3
 
 // 获取所有单元格
 const cellArr = document.querySelectorAll('.cell')
@@ -29,7 +30,12 @@ function getDataCells() {
 
 // 执行函数
 start()
-getDom('down').addEventListener('click', moveDown)
+getDom('down').addEventListener('click', ()=> {
+  moveCol(true)
+})
+getDom('up').addEventListener('click', ()=> {
+  moveCol(false)
+})
 
 
 // 开始初始化
@@ -38,8 +44,8 @@ function start() {
   popNum(2)
 }
 
-// 向下
-function moveDown() { 
+// 纵向移动
+function moveCol(reverse) {  
 
   // 将有数据的格子归类到相对应的列中(存储的是dom的id)(保存旧数据的位置)   
   getDataCells()  
@@ -51,24 +57,39 @@ function moveDown() {
   // 清除原数据
   clear()
 
-  // 渲染新数据
-  for (let key in temp) {
-    if (temp[key].length) {
-      let arr = temp[key].reverse()      
-      for (let i=0, idx=3; i<arr.length; i++) {
-        let id = idx.toString() + key.toString()
-        idx--
-        getDom(id).innerHTML = arr[i]
+  // 渲染新数据(先判断方向)
+  if (reverse) {
+    for (let key in temp) {
+      if (temp[key].length) {
+        let arr = temp[key].reverse()   
+        for (let i=0, idx=MAX_IDX; i<arr.length; i++) {
+          let id = idx.toString() + key.toString()
+          idx--
+          getDom(id).innerHTML = arr[i]
+        }
       }
     }
-  }
+  } else {
+    for (let key in temp) {
+      if (temp[key].length) {
+        let arr = temp[key]  
+        for (let i=0; i<arr.length; i++) {
+          let id = i.toString() + key.toString()          
+          getDom(id).innerHTML = arr[i]
+        }
+      }
+    }
+  }  
 
   // 将有数据的格子归类到相对应的列中(存储的是dom的id)(保存新数据的位置)  
   getDataCells()
   let newData = cols
+  console.log(ogData)
+  console.log(newData)
   
   // 无变化则不做任何操作
   if (noChange(newData, ogData) != false) {
+    debugger
     alert('you have no path on this direction')
     return
   } 
@@ -163,9 +184,9 @@ function noChange(newData, ogData) {
   for(let key in newData) {
     if (newData[key].length) {
       let newSingleArr = newData[key]
-      let oldSingerArr = ogData[key]
-      for (let i=0; i<newSingleArr.length; i++) {
-        if (newSingleArr[i] != oldSingerArr[i]) {
+      let oldSingleArr = ogData[key]
+      for (let i=0; i<oldSingleArr.length; i++) {
+        if (newSingleArr[i] != oldSingleArr[i]) {
           return false
         }        
       }
