@@ -21,23 +21,32 @@ html
       text-align center
       line-height 1rem
       font-size .5rem 
-.move 
+.move   
   .movecell
-    height 30px
-    line-height 30px
+    font-size .14rem
+    height .6rem
+    line-height .6rem
     text-align center
-    width 50px
-    background red
+    width .8rem
+    border-radius 4px
+    background yellow 
+    border 2px solid orange
+    cursor pointer
   .top 
-    width 3rem
+    margin 0 auto
+    width 6rem
     .movecell 
       margin 0 auto
   .bottom
+    margin 0 auto
     margin-top 20px
     display flex 
     justify-content center
-    width 3rem
+    width 6rem
     .movecell
       margin 0 10px
 
+@media screen and (max-width 800px)
+  html 
+    font-size 50px
     

@@ -21,7 +21,7 @@ function initCols() {
 
 // 执行函数
 start()
-getDom('down').addEventListener('click', ()=> {
+getDom('down').addEventListener('click', (e)=> {
   move('col', true)
 })
 getDom('up').addEventListener('click', ()=> {
@@ -83,12 +83,15 @@ function move(dir, reverse) {
   // 将有数据的格子归类到相对应的列中(存储的是dom的id)(保存新数据的位置)  
   getDataCells(dir)
   let newData = cols 
+  console.log(newData)
+  console.log(ogData)
   
-  // 无变化则不做任何操作
+  // 无变化则不做任何操作  
   if (noChange(newData, ogData, reverse) != false) {    
     alert('you have no path on this direction')
     return
   } 
+   
 
   // 清除动画
   for (let i = 0; i < cellArr.length; i++) {
@@ -100,7 +103,7 @@ function move(dir, reverse) {
   // 在空位生成两个新元素
   setTimeout(() => {
     popNum(2)
-  }, 10)  
+  }, 20)  
 }
 
 // 从数组中随机抽取互不相同的几个元素(*性能最佳的方法*)
@@ -213,7 +216,7 @@ function noChange(newData, ogData, reverse) {
       // 判断是否反转过？如果是那就把原始的也反转一次再对比
       let oldSingleArr = reverse ? ogData[key].reverse() : ogData[key]
       for (let i=0; i<oldSingleArr.length; i++) {
-        if (newSingleArr[i] != oldSingleArr[i]) {
+        if (newSingleArr[i] !== oldSingleArr[i]) {
           return false
         }        
       }
