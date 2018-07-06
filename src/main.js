@@ -17,24 +17,41 @@ function initCols() {
     3: []
   }
 }
-// 获取有数据的格子id，并且push到所属的列中
-function getDataCells() {
+// 获取有数据的格子id，并且push到所属的列中(先判断横向还是纵向)
+function getDataCells(dir) {
   initCols()
-  for (let i = 0; i < cellArr.length; i++) {
-    if (cellArr[i].innerHTML) {
-      let idx = cellArr[i].id.charAt(1)
-      cols[idx].push(cellArr[i].id)      
+  // 横向
+  if (dir == 'col') {
+    for (let i = 0; i < cellArr.length; i++) {
+      if (cellArr[i].innerHTML) {
+        let idx = cellArr[i].id.charAt(1)
+        cols[idx].push(cellArr[i].id)      
+      }
     }
-  }
+  } else {
+    // 纵向
+    for (let i = 0; i < cellArr.length; i++) {
+      if (cellArr[i].innerHTML) {
+        let idx = cellArr[i].id.charAt(0)
+        cols[idx].push(cellArr[i].id)      
+      }
+    }
+  } 
 }
 
 // 执行函数
 start()
 getDom('down').addEventListener('click', ()=> {
-  moveCol(true)
+  move('col', true)
 })
 getDom('up').addEventListener('click', ()=> {
-  moveCol(false)
+  move('col', false)
+})
+getDom('right').addEventListener('click', ()=> {
+  move('row', true)
+})
+getDom('left').addEventListener('click', ()=> {
+  move('row', false)
 })
 
 
@@ -45,14 +62,14 @@ function start() {
 }
 
 // 纵向移动
-function moveCol(reverse) {  
+function move(dir, reverse) {  
 
   // 将有数据的格子归类到相对应的列中(存储的是dom的id)(保存旧数据的位置)   
-  getDataCells()  
+  getDataCells(dir)  
   let ogData = cols 
 
   // 暂存计算后的新数据(存储的是计算后的数值)
-  let temp = calData(cols)  
+  let temp = calData(cols, reverse)  
   
   // 清除原数据
   clear()
@@ -61,28 +78,49 @@ function moveCol(reverse) {
   if (reverse) {
     for (let key in temp) {
       if (temp[key].length) {
-        let arr = temp[key].reverse()   
-        for (let i=0, idx=MAX_IDX; i<arr.length; i++) {
-          let id = idx.toString() + key.toString()
-          idx--
-          getDom(id).innerHTML = arr[i]
-        }
+        let arr = temp[key]
+        // 判断纵向还是横向 
+        if (dir == 'col') {
+          // 向下
+          for (let i=0, idx=MAX_IDX; i<arr.length; i++) {
+            let id = idx.toString() + key.toString()
+            idx--
+            getDom(id).innerHTML = arr[i]
+          }
+        } else {
+          // 向右
+          for (let i=0, idx=MAX_IDX; i<arr.length; i++) {
+            let id = key.toString() + idx.toString()
+            idx--
+            getDom(id).innerHTML = arr[i]
+          }
+        }        
       }
     }
   } else {
     for (let key in temp) {
       if (temp[key].length) {
-        let arr = temp[key]  
-        for (let i=0; i<arr.length; i++) {
-          let id = i.toString() + key.toString()          
-          getDom(id).innerHTML = arr[i]
-        }
+        let arr = temp[key] 
+        // 判断纵向还是横向  
+        if (dir == 'col') {
+          // 向上
+          for (let i=0; i<arr.length; i++) {
+            let id = i.toString() + key.toString()          
+            getDom(id).innerHTML = arr[i]
+          }
+        } else {
+          // 向左
+          for (let i=0; i<arr.length; i++) {
+            let id = key.toString() + i.toString()          
+            getDom(id).innerHTML = arr[i]
+          }
+        }        
       }
     }
   }  
 
   // 将有数据的格子归类到相对应的列中(存储的是dom的id)(保存新数据的位置)  
-  getDataCells()
+  getDataCells(dir)
   let newData = cols
   console.log(ogData)
   console.log(newData)
@@ -102,7 +140,9 @@ function moveCol(reverse) {
   }
 
   // 在空位生成两个新元素
-  popNum(2)
+  setTimeout(() => {
+    popNum(2)
+  }, 10)  
 }
 
 // 从数组中随机抽取互不相同的几个元素(*性能最佳的方法*)
@@ -143,15 +183,15 @@ function popNum(num) {
 }
 
 // 计算结果并返回结果列表
-function calData(cols) {
+function calData(cols, reverse) {
   let temp = {
     0: [],
     1: [],
     2: [],
     3: []
   }
-  for (let key in cols) {
-    let col = cols[key]
+  for (let key in cols) {    
+    let col = reverse ? cols[key].reverse() : cols[key]    
     let len = col.length    
     if (len > 1) {      
       for (let i=0; i < len; i++) {  
